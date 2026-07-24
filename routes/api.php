@@ -3,6 +3,7 @@
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\TaskController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,7 +26,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('users', UserController::class)->only(['index', 'show']);
         Route::patch('users/{id}/status', [UserController::class, 'changeStatus']);
         Route::apiResource('Projects', ProjectController::class);
+        Route::apiResource('Tasks', TaskController::class);
     });
+    
 
     Route::middleware('IsOwnerOrAdmin')->group(function () {
         Route::apiResource('users', UserController::class)->only(['update', 'destroy']);

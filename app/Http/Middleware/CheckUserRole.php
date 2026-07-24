@@ -14,16 +14,20 @@ class CheckUserRole
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, string $role): Response
+    public function handle(Request $request, Closure $next, string ...$roles): Response
     {
         $user = Auth::user();
-
-        if (!$user || !$user->role || $user->role->role_name !== $role) {
+    
+        if (
+            !$user ||
+            !$user->role ||
+            !in_array($user->role->role_name, $roles)
+        ) {
             return response()->json([
                 'message' => 'You are not authorized to perform this action.'
             ], 403);
         }
-
+    
         return $next($request);
     }
 }

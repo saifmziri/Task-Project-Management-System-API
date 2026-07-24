@@ -51,14 +51,14 @@ class UserController extends Controller
     public function update(UpdateUserRequest $request, string $id): JsonResponse
     {
         $userToUpdate = User::findOrFail($id);
-
+    
         $updatedUser = $this->userService->updateUser($userToUpdate, $request->validated());
-
+    
         return $this->ok([
-            'user' => new UserResource($updatedUser->load('role'))
-        ], 'User updated successfully');
+            'user' => new UserResource($updatedUser->fresh()->load('role'))
+        ], 'User updated successfully. Verification email sent if email was changed.');
     }
-
+    
     /**
      * Change user account status (Active/Inactive)
      */

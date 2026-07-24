@@ -3,24 +3,32 @@
 namespace App\Services;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+
 
 class UserService
 {
+    public function __construct(protected AuthService $authService) {}
+
     /**
      * تحديث بيانات المستخدم
      */
     public function updateUser(User $user, array $data): User
     {
-        if (!empty($data['password'])) {
-            $data['password'] = Hash::make($data['password']);
-        } else {
-            unset($data['password']);
+        $isEmailChanging = isset($data['email']) && $data['email'] !== $user->email;
+    
+        if ($isEmailChanging) {
+            $data['email_verified_at'] = null; // إبطال التوثيق القديم
+            
+            $user->update($data); // تحديث الإيميل في الداتابيز أولاً
+            
+            $this->authService->sendCustomVerificationEmail($user); // إرسال التفعيل للإيميل الجديد
+    
+            return $user;
         }
-
-        // فقط تحديث البيانات، بدون إرسال verification (تم نقل auth logic إلى AuthService)
+    
+        // إذا لم يتغير الإيميل، يتم تحديث باقي البيانات فقط (مثل الاسم أو الهاتف)
         $user->update($data);
-
+    
         return $user;
     }
 
