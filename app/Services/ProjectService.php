@@ -6,23 +6,26 @@ use App\Models\Project;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use App\Exceptions\ProjectHasTasksException;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ProjectService
 {
     /**
      * Get all accessible projects.
      */
-    public function getAll(User $user): Collection
+    public function getAll(User $user, array $filters = []): LengthAwarePaginator
     {
-        $query = Project::query();
-
-        if (!$user->isAdmin()) {
-            $query->whereHas('tasks', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            });
-        }
-
-        return $query->get();
+        return Project::query()
+            ->filter($filters, $user)
+            ->when($filters['with_tasks'] ?? false, function ($query) use ($user) {
+                $query->with(['tasks' => function ($taskQuery) use ($user) {
+                    
+                    if (!$user->isAdmin()) {
+                        $taskQuery->where('user_id', $user->id);
+                    }
+                }]);
+            })
+            ->paginate($filters['per_page'] ?? 15);
     }
 
     /**

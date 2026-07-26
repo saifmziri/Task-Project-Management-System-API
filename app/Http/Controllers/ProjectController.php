@@ -20,8 +20,16 @@ class ProjectController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $projects = $this->projectService->getAll($request->user());
-
+        $filters = $request->only([
+            'search',
+            'start_date',
+            'due_date',
+            'with_tasks',
+            'per_page'
+        ]);
+    
+        $projects = $this->projectService->getAll($request->user(), $filters);
+    
         return $this->ok(
             ProjectResource::collection($projects),
             'Projects fetched successfully.'

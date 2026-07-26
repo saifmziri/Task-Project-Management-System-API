@@ -8,6 +8,7 @@ use App\Services\TaskService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Resources\TaskResource;
 
 class TaskController extends Controller
 {
@@ -20,10 +21,19 @@ class TaskController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $tasks = $this->taskService->getAll($request->user());
-
+        $filters = $request->only([
+            'search',
+            'status',
+            'priority',
+            'project_id',
+            'user_id',
+            'per_page'
+        ]);
+    
+        $tasks = $this->taskService->getAll($request->user(), $filters);
+    
         return $this->ok(
-            $tasks,
+            TaskResource::collection($tasks),
             'Tasks fetched successfully.'
         );
     }
