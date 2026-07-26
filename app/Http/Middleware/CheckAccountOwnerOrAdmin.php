@@ -18,7 +18,6 @@ class CheckAccountOwnerOrAdmin
         
         $userIdFromRoute = $request->route('user');
 
-
         if (!$currentUser) {
             return response()->json(['message' => 'Unauthenticated.'], 401);
         }

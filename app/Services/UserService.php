@@ -44,12 +44,4 @@ class UserService
         $user->update(['status' => $status]);
         return $user;
     }
-
-    /**
-     * حذف مستخدم
-     */
-    public function deleteUser(User $user): bool
-    {
-        return $user->delete();
-    }
 }

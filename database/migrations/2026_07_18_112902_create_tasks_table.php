@@ -18,7 +18,7 @@ return new class extends Migration
             
             $table->string('status', 30)->default('pending');   
             $table->string('priority', 20)->default('medium');
-            $table->date('due_date')->nullable(); // تاريخ تسليم المهمة
+            $table->date('due_date')->nullable();
             $table->timestamps();
         });
     }

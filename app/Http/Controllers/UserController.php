@@ -80,15 +80,4 @@ class UserController extends Controller
             'user' => new UserResource($updatedUser->load('role'))
         ], "User status changed to {$request->status} successfully");
     }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id): JsonResponse
-    {
-        $userToDelete = User::findOrFail($id);
-        $this->userService->deleteUser($userToDelete);
-
-        return $this->ok(null, 'User deleted successfully');
-    }
 }
