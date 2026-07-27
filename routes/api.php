@@ -7,11 +7,10 @@ use App\Http\Controllers\TaskController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// 1. المسارات العامة
 Route::post('login', [AuthController::class, 'login'])->middleware('throttle:login');
 Route::post('verify-email', [AuthController::class, 'verifyEmail']);
 Route::post('/email/resend-verification', [AuthController::class, 'resendVerificationEmail'])
-    ->middleware('throttle:3,1'); // 👈 حماية من الـ Spam (السماح بـ 3 محاولات فقط كل دقيقة)
+    ->middleware('throttle:3,1');
 
 // 2. المسارات المحمية بـ Sanctum (لكل المستخدمين)
 Route::middleware('auth:sanctum')->group(function () {
@@ -19,7 +18,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
-
 
     Route::middleware('CheckUser:Admin')->group(function () {
         Route::post('register', [AuthController::class, 'register']);
@@ -37,7 +35,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('CheckUser:Employee')->group(function(){
         Route::patch('Tasks/{id}/Status', [TaskController::class,'changeStatus']);
     });
-    
 
     Route::middleware('IsOwnerOrAdmin')->group(function () {
         Route::apiResource('users', UserController::class)->only(['update']);
