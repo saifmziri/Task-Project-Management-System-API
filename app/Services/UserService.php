@@ -9,6 +9,11 @@ class UserService
 {
     public function __construct(protected AuthService $authService) {}
 
+    public function current(User $user): User
+    {
+        return $user->load('role');
+    }
+    
     /**
      * تحديث بيانات المستخدم
      */

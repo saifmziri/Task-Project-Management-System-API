@@ -9,6 +9,7 @@ use App\Http\Requests\User\UpdateUserRequest;
 use App\Http\Requests\User\ChangeUserStatusRequest;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -17,6 +18,17 @@ class UserController extends Controller
     public function __construct(UserService $userService)
     {
         $this->userService = $userService;
+    }
+
+    public function current(Request $request)
+    {
+        $user = $request->user(); 
+        $userWithRole = $this->userService->current($user);
+    
+        return $this->ok(
+            new UserResource($userWithRole),
+            'User retrieved successfully'
+        );
     }
 
     /**

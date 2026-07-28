@@ -15,9 +15,7 @@ Route::post('/email/resend-verification', [AuthController::class, 'resendVerific
 // 2. المسارات المحمية بـ Sanctum (لكل المستخدمين)
 Route::middleware('auth:sanctum')->group(function () {
     
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
+    Route::get('/user', [UserController::class, 'current']);
 
     Route::middleware('CheckUser:Admin')->group(function () {
         Route::post('register', [AuthController::class, 'register']);
