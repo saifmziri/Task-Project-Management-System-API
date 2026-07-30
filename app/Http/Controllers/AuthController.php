@@ -36,6 +36,29 @@ class AuthController extends Controller
             'user'  => new UserResource($result['user']),
         ], 'User logged in successfully');
     }
+
+    public function forgotPassword(Request $request): JsonResponse
+    {
+        $request->validate([
+            'email' => 'required|email|string',
+        ]);
+    
+        $this->authService->sendResetLink($request->email);
+    
+        return $this->ok(null, 'إذا كان البريد مسجلاً لدينا، فقد تم إرسال رابط إعادة تعيين كلمة السر إليه.');
+    }
+    
+    public function resetPassword(Request $request): JsonResponse
+    {
+        $request->validate([
+            'token'                 => 'required|string',
+            'password'              => 'required|string|min:8|confirmed',
+        ]);
+    
+        $this->authService->resetPassword($request->all());
+    
+        return $this->ok(null, 'تم إعادة تعيين كلمة السر بنجاح. يمكنك الآن تسجيل الدخول.');
+    }
     
     private function resolveDeviceName(Request $request): string
     {

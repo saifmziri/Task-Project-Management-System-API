@@ -11,6 +11,10 @@ Route::post('login', [AuthController::class, 'login'])->middleware('throttle:log
 Route::post('verify-email', [AuthController::class, 'verifyEmail']);
 Route::post('/email/resend-verification', [AuthController::class, 'resendVerificationEmail'])
     ->middleware('throttle:3,1');
+    Route::post('forgot-password', [AuthController::class, 'forgotPassword'])
+    ->middleware('throttle:3,1');
+Route::post('reset-password', [AuthController::class, 'resetPassword'])
+    ->middleware('throttle:5,1');
 
 // 2. المسارات المحمية بـ Sanctum (لكل المستخدمين)
 Route::middleware('auth:sanctum')->group(function () {

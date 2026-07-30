@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Mail\VerifyEmail;
+use Illuminate\Support\Facades\DB;
+use App\Mail\ResetPasswordMail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -121,6 +123,75 @@ class AuthService
         Mail::to($user->email)->send(new VerifyEmail($user, $reactUrl));
     }
 
+    /**
+      * 1. إرسال رابط استعادة كلمة السر
+    */
+    public function sendResetLink(string $email): void
+    {
+        $cleanEmail = trim($email);
+    
+        $user = User::where('email', $cleanEmail)->first();
+    
+        if (!$user) {
+            throw ValidationException::withMessages([
+                'email' => ['البريد الإلكتروني غير مسجل لدينا.'],
+            ]);
+        }
+    
+        $rawToken = Str::random(64);
+    
+        // حفظ التوكن في الداتا بيز
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $cleanEmail],
+            [
+                'token'      => hash('sha256', $rawToken),
+                'created_at' => now(),
+            ]
+        );
+    
+        $frontendUrl = config('app.frontend_url', 'http://localhost:5173');
+        
+        // 🎯 الرابط الجديد: توكن فقط بدون إيميل وبدون رموز زائدة (%0A)
+        $resetUrl = rtrim($frontendUrl, '/') . "/reset-password?token={$rawToken}";
+    
+        Mail::to($user->email)->send(new ResetPasswordMail($user, $resetUrl));
+    }
+
+    public function resetPassword(array $data): void
+    {
+        // 1. تشفير التوكن القادم من الفرونت إند
+        $hashedToken = hash('sha256', $data['token']);
+    
+        // 2. البحث عن التوكن مباشرة في قاعدة البيانات لجلب الإيميل المرتبط به
+        $record = DB::table('password_reset_tokens')
+            ->where('token', $hashedToken)
+            ->first();
+    
+        if (!$record) {
+            throw ValidationException::withMessages([
+                'token' => ['رابط استعادة كلمة السر غير صالح أو تم استخدامه مسبقاً.'],
+            ]);
+        }
+    
+        // 3. التحقق من صلاحية الوقت (مثلاً 30 دقيقة)
+        if (now()->subMinutes(30)->greaterThan($record->created_at)) {
+            DB::table('password_reset_tokens')->where('token', $hashedToken)->delete();
+            throw ValidationException::withMessages([
+                'token' => ['انتهت صلاحية رابط الاستعادة، يرجى طلب رابط جديد.'],
+            ]);
+        }
+    
+        // 4. استخراج الإيميل التلقائي من قاعدة البيانات وتحديث المستخدم
+        $user = User::where('email', $record->email)->first();
+        
+        $user->update([
+            'password' => Hash::make($data['password']),
+        ]);
+    
+        // 5. مسح التوكن وإلغاء الجلسات
+        DB::table('password_reset_tokens')->where('token', $hashedToken)->delete();
+        $user->tokens()->delete();
+    }
     /**
      * إعادة إرسال رابط التفعيل
      */
