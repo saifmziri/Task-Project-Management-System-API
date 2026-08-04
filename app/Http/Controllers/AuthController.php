@@ -96,8 +96,7 @@ class AuthController extends Controller
         $result = $this->authService->verifyEmail($request->token);
 
         return $this->ok([
-            'token' => $result['token'],
-            'user'  => new UserResource($result['user']),
+            null,
         ], 'Email verified successfully');
     }
 

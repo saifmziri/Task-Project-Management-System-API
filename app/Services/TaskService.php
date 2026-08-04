@@ -5,20 +5,22 @@ namespace App\Services;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+
+
 
 class TaskService
 {
     /**
      * Get all accessible tasks.
      */
-    public function getAll(User $user, array $filters = []): LengthAwarePaginator
+    public function getAll(User $user, array $filters = []): collection
     {
         return Task::query()
-            ->with(['project', 'user']) 
+            ->with(['project', 'user'])
             ->filter($user, $filters)
-            ->paginate($filters['per_page'] ?? 15);
+            ->get();
     }
+
     /**
      * Get one accessible task.
      */

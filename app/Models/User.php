@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Builder;
 use Laravel\Sanctum\HasApiTokens; // 1. استدعاء الـ namespace الخاص بالتوكنز
 
 class User extends Authenticatable
@@ -58,5 +59,17 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return  $this->role?->role_name === 'Admin';
+    }
+
+    public function scopeFilter(Builder $query, array $filters = []): Builder
+    {
+        return $query
+            ->when($filters['search'] ?? null, function ($q, $search) {
+                $q->where('full_name', 'LIKE', "%{$search}%");
+            })
+            ->when($filters['status'] ?? null, function ($q, $status) {
+                $q->where('status', $status);
+            })
+            ->latest();
     }
 }

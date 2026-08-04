@@ -44,7 +44,7 @@ class Task extends Model
             ->when($filters['search'] ?? null, function ($q, $search) {
                 $q->where('task_name', 'LIKE', "%{$search}%");
             })
-            // 📌 الفلترة بحالة المهمة (Pending, In Progress, Completed, ...)
+            // 📌 الفلترة بحالة المهمة (canceled, In Progress, Completed, ...)
             ->when($filters['status'] ?? null, function ($q, $status) {
                 $q->where('status', $status);
             })
@@ -60,6 +60,14 @@ class Task extends Model
             ->when(($filters['user_id'] ?? null) && $user->isAdmin(), function ($q, $userId) {
                 $q->where('user_id', $userId);
             })
+            ->orderByRaw("
+                CASE status
+                    WHEN 'in_progress' THEN 1
+                    WHEN 'canceled' THEN 2
+                    WHEN 'completed' THEN 3
+                    ELSE 4
+                END
+                ")
             ->latest();
     }
 }

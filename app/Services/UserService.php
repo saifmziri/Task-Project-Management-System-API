@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
-
+use Illuminate\Database\Eloquent\Collection;
 
 class UserService
 {
@@ -12,6 +12,14 @@ class UserService
     public function current(User $user): User
     {
         return $user->load('role');
+    }
+
+    public function getAll(array $filters = []): Collection
+    {
+        return User::query()
+            ->with('role')
+            ->filter($filters)
+            ->get();
     }
     
     /**

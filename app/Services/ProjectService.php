@@ -6,14 +6,13 @@ use App\Models\Project;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use App\Exceptions\ProjectHasTasksException;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ProjectService
 {
     /**
      * Get all accessible projects.
      */
-    public function getAll(User $user, array $filters = []): LengthAwarePaginator
+    public function getAll(User $user, array $filters = []): Collection
     {
         return Project::query()
             ->filter($filters, $user)
@@ -25,7 +24,8 @@ class ProjectService
                     }
                 }]);
             })
-            ->paginate($filters['per_page'] ?? 15);
+            ->get();
+            
     }
 
     /**

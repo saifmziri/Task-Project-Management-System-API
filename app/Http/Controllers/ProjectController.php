@@ -24,8 +24,7 @@ class ProjectController extends Controller
             'search',
             'start_date',
             'due_date',
-            'with_tasks',
-            'per_page'
+            'with_tasks'
         ]);
     
         $projects = $this->projectService->getAll($request->user(), $filters);

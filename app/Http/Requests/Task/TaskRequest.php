@@ -24,10 +24,10 @@ class TaskRequest extends FormRequest
     {
         return [
             'task_name' => 'required|string|max:255',
-            'project_id' => 'string',
-            'status' => 'required|in:completed,pending,Cancel',
+            'project_id' => 'integer|exists:projects,id',
+            'status' => 'required|in:completed,in_progress,canceled',
             'priority' => 'required|in:low,medium,high',
-            'due_date' => 'nullable|date',
+            'due_date' => ['required', 'date', 'after_or_equal:today'],
             'user_id' => 'exists:users,id',
         ];
     }

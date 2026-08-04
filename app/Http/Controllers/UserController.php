@@ -31,29 +31,18 @@ class UserController extends Controller
         );
     }
 
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $users = User::with('role')->get();
-
+        $filters = $request->only([
+            'search',
+            'status'
+        ]);
+    
+        $users = $this->userService->getAll($filters);
+    
         return $this->ok(
             UserResource::collection($users),
-            'Users fetched successfully'
-        );
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id): JsonResponse
-    {
-        $user = User::findOrFail($id);
-
-        return $this->ok(
-            new UserResource($user->load('role')),
-            'User fetched successfully'
+            'Users fetched successfully.'
         );
     }
 

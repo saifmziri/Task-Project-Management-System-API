@@ -4,6 +4,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,8 +19,9 @@ Route::post('reset-password', [AuthController::class, 'resetPassword'])
 
 // 2. المسارات المحمية بـ Sanctum (لكل المستخدمين)
 Route::middleware('auth:sanctum')->group(function () {
-    
+
     Route::get('/user', [UserController::class, 'current']);
+    Route::get('/dashboard', [DashboardController::class, 'index']);
 
     Route::middleware('CheckUser:Admin')->group(function () {
         Route::post('register', [AuthController::class, 'register']);
@@ -36,11 +38,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('CheckUser:Employee')->group(function(){
         Route::patch('tasks/{id}/status', [TaskController::class,'changeStatus']);
+        Route::post('/user/change-password', [AuthController::class, 'changePassword']);
     });
 
     Route::middleware('IsOwnerOrAdmin')->group(function () {
         Route::apiResource('users', UserController::class)->only(['update']);
-        Route::post('/user/change-password', [AuthController::class, 'changePassword']);
     });
 
     // تسجيل الخروج

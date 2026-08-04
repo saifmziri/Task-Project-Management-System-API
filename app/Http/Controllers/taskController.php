@@ -26,8 +26,7 @@ class TaskController extends Controller
             'status',
             'priority',
             'project_id',
-            'user_id',
-            'per_page'
+            'user_id'
         ]);
     
         $tasks = $this->taskService->getAll($request->user(), $filters);
@@ -103,6 +102,7 @@ class TaskController extends Controller
             'Task updated successfully.'
         );
     }
+
 
     /**
      * Change task status.

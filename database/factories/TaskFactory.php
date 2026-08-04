@@ -18,7 +18,7 @@ class TaskFactory extends Factory
     {
         return [
             'task_name' => $this->faker->sentence(3), // الحقل الصحيح المحدث
-            'status' => $this->faker->randomElement(['pending', 'in_progress', 'completed']),
+            'status' => $this->faker->randomElement(['canceled', 'in_progress', 'completed']),
             'priority' => $this->faker->randomElement(['low', 'medium', 'high']),
             'due_date' => $this->faker->dateTimeBetween('now', '+3 months')->format('Y-m-d'),
             

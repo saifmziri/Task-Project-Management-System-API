@@ -23,14 +23,14 @@ class ChangeTaskStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => 'required|in:completed,pending,Cancel',
+            'status' => 'required|in:completed,in_progress,canceled',
         ];
     }
     public function messages(): array
     {
         return [
             'status.required' => 'The status field is required.',
-            'status.in'       => 'The status must be either completed or pending or Cancel.',
+            'status.in'       => 'The status must be either completed or in_progress or cancel.',
         ];
     }
 }
