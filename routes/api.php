@@ -22,6 +22,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/user', [UserController::class, 'current']);
     Route::get('/dashboard', [DashboardController::class, 'index']);
+    Route::post('/user/change-password', [AuthController::class, 'changePassword']);
+
 
     Route::middleware('CheckUser:Admin')->group(function () {
         Route::post('register', [AuthController::class, 'register']);
@@ -38,7 +40,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('CheckUser:Employee')->group(function(){
         Route::patch('tasks/{id}/status', [TaskController::class,'changeStatus']);
-        Route::post('/user/change-password', [AuthController::class, 'changePassword']);
     });
 
     Route::middleware('IsOwnerOrAdmin')->group(function () {

@@ -22,9 +22,9 @@ class ChangePasswordRequest extends BaseRequest
     public function messages(): array
     {
         return [
-            'new_password.confirmed' => 'تأكيد كلمة المرور الجديدة غير مطابق.',
-            'new_password.different' => 'كلمة المرور الجديدة يجب أن تكون مختلفة عن كلمة المرور الحالية.',
-            'new_password.min' => 'كلمة المرور الجديدة يجب أن لا تقل عن 8 خانات.',
+            'new_password.confirmed' => 'The new password confirmation does not match.',
+            'new_password.different' => 'The new password must be different from the current password.',
+            'new_password.min'       => 'The new password must be at least 8 characters.',
         ];
     }
 }
